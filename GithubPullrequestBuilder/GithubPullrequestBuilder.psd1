@@ -24,10 +24,10 @@ GUID = 'c72d5a3e-25d9-49c4-b5c6-57d9d94d9e56'
 Author = 'kosmonavtsv@gmail.com'
 
 # Company or vendor of this module
-CompanyName = '??????????'
+# CompanyName = ''
 
 # Copyright statement for this module
-Copyright = '(c) 2018 kosmonavtsv@gmail.com. ??? ????? ????????.'
+Copyright = '(c) 2018 kosmonavtsv@gmail.com.'
 
 # Description of the functionality provided by this module
 Description = 'Builder of github pull request'
