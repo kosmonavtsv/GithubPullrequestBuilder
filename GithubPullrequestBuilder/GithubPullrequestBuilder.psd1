@@ -12,7 +12,7 @@
 RootModule = '.\GithubPullrequestBuilder.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0.1'
+ModuleVersion = '1.0.0.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -24,7 +24,7 @@ GUID = 'c72d5a3e-25d9-49c4-b5c6-57d9d94d9e56'
 Author = 'kosmonavtsv@gmail.com'
 
 # Company or vendor of this module
-# CompanyName = ''
+CompanyName = 'Unknown'
 
 # Copyright statement for this module
 Copyright = '(c) 2018 kosmonavtsv@gmail.com.'
