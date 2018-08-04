@@ -1,8 +1,8 @@
-[string[]]$PowerShellModules = @("posh-git")
+[string[]]$PowerShellModules = @('posh-git')
 [string[]]$PackageProviders = @('NuGet', 'PowerShellGet')
 
 # Line break for readability in AppVeyor console
-Write-Host -Object ''
+Write-Output ''
 
 # Install package providers for PowerShell Modules
 ForEach ($Provider in $PackageProviders) {
