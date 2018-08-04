@@ -31,7 +31,9 @@ environment:
 
 # Install NuGet to interact with the PowerShell Gallery
 install:
+  - ps: PowerShell -Command {Install-Module -Name PowerShellGet -Force -SkipPublisherCheck}
   - ps: . .\build\install.ps1
+
 
 # Invoke Pester to run all of the unit tests, then save the results into XML in order to populate the AppVeyor tests section
 # If any of the tests fail, consider the pipeline failed

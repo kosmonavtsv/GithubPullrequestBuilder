@@ -57,6 +57,7 @@ function Send-GitubPullrequest {
         [Parameter(Mandatory)]
         [string]$Base,
         [Parameter(Mandatory)]
+        [AllowEmptyString()]
         [string]$Body
     )
     try {
@@ -98,7 +99,14 @@ function Get-GitRepositoryName {
 
 function New-PRDescription {
     $gitRoot = (git rev-parse --show-toplevel)
-    Get-Content "$gitRoot\PULL_REQUEST_TEMPLATE.md" -Encoding UTF8 -Raw
+    $template = "$gitRoot\PULL_REQUEST_TEMPLATE.md"
+    if (Test-Path $template) {
+        Get-Content $template -Encoding UTF8 -Raw
+    }
+    else {
+        ""
+    }
+    
 }
 
 function New-PRTitle {
