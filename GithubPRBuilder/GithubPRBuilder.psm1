@@ -1,5 +1,3 @@
-$moduleName = 'GithubPRBuilder'
-
 <#
 .SYNOPSIS
     Create pull request
@@ -106,7 +104,6 @@ function New-PRDescription {
     else {
         ""
     }
-    
 }
 
 function New-PRTitle {
@@ -173,7 +170,7 @@ function Import-GithubPRBuilderConfiguration {
 
     if ($notExistedConfigs) {
         $congigsStr = [string]::Join(', ', $notExistedConfigs)
-        Write-Warning "Thanks for using $moduleName, configurations not found: $congigsStr, please run Update-GithubPRBuilderConfiguration to configure."
+        Write-Warning "Thanks for using GithubPRBuilder, configurations not found: $congigsStr, please run Update-GithubPRBuilderConfiguration to configure."
         throw "Module not configured. Run Update-GithubPRBuilderConfiguration"
     }
     $secureString = $configuration.JiraPassword | ConvertTo-SecureString
