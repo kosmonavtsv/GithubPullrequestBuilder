@@ -109,6 +109,7 @@ function New-PRDescription {
     $prTemplate = Fill-JiraParagraph -Template $prTemplate -Target $Target -Base $Base
     $prTemplate = Fill-SolutionParagraph -Template $prTemplate -Target $Target -Base $Base
     Write-Verbose "PR Description:`r`n$prTemplate"
+    $prTemplate
 }
 
 function Fill-SolutionParagraph {
