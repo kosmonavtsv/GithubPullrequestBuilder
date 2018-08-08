@@ -224,7 +224,7 @@ class GitCommit {
             $this.Title = $Title.Trim()
         }
         if ($Description) {
-            $this.$Description = $Description.Trim()
+            $this.Description = $Description.Trim()
         }
     }
 }
