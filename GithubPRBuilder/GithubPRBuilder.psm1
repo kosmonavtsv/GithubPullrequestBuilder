@@ -358,7 +358,7 @@ function Import-GithubPRBuilderConfiguration {
 
     if ($notExistedConfigs) {
         $congigsStr = [string]::Join(', ', $notExistedConfigs)
-        Write-Warning "Thanks for using GithubPRBuilder, configurations not found: $congigsStr, please run Update-GithubPRBuilderConfiguration to configure."
+        Write-Warning "Thanks for using GithubPRBuilder, configurations not found: $congigsStr, please run Set-GithubPRBuilderConfiguration or Update-GithubPRBuilderConfiguration to configure."
         throw "Module not configured. Run Update-GithubPRBuilderConfiguration"
     }
     $secureString = $configuration.JiraPassword | ConvertTo-SecureString
