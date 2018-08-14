@@ -18,6 +18,9 @@ function New-GithubPullrequest {
         [Parameter(Mandatory = $false)]
         [string]$Base = "develop"
     )
+    # TODO: refactoring
+    # Clear commits cache
+    $Script:gitCommitsCache = $null
     $settings = Import-GithubPRBuilderConfiguration
 
     $ErrorActionPreference = "Stop"
@@ -123,17 +126,15 @@ function Fill-SolutionParagraph {
         [Parameter(Mandatory)]
         [string]$Template
     )
-    $commits = Get-GitCommitsDiff -Target $Target -Base "origin/$Base"
-    #Write-Verbose $commits.Count()
-    Write-Verbose $commits[0].Title
-    $commits = $commits | % {
+    [GitCommit[]] $commits = Get-GitCommitsDiff -Target $Target -Base "origin/$Base"
+    $solutions = $commits | % {
         $body = "* $($_.Title.TrimEnd('.'))."
-        if ($commit.Body) {
-            $body += "`r`n`r`n$($_.Body)"
+        if ($_.Description) {
+            $body += "`r`n`r`n$($_.Description)"
         }
         $body
     }
-    $solutionParagraph = [string]::Join("`r`n", $commits)
+    $solutionParagraph = [string]::Join("`r`n", $solutions)
     $Template -replace '<solution>', $solutionParagraph
 }
 
@@ -262,8 +263,8 @@ function Get-GitLog {
         [Parameter(Mandatory)]
         [string]$LogFormat
     )
-    if ($Script:log) {
-        $log = $Script:log
+    if ($Script:gitCommitsCache) {
+        $log = $Script:gitCommitsCache
     }
     else {
         Write-Verbose "git fetch origin $Base"
@@ -275,7 +276,7 @@ function Get-GitLog {
         $outputEncoding = [Console]::OutputEncoding
         $log = $utf8.GetString($outputEncoding.GetBytes($log))
         Write-Verbose "GIT COMMITS: $log"
-        $Script:log = $log
+        $Script:gitCommitsCache = $log
     }
     return $log
 }
@@ -358,7 +359,7 @@ function Import-GithubPRBuilderConfiguration {
 
     if ($notExistedConfigs) {
         $congigsStr = [string]::Join(', ', $notExistedConfigs)
-        Write-Warning "Thanks for using GithubPRBuilder, configurations not found: $congigsStr, please run Set-GithubPRBuilderConfiguration or Update-GithubPRBuilderConfiguration to configure."
+        Write-Warning "Thanks for using GithubPRBuilder, configurations not found: $congigsStr, please run Update-GithubPRBuilderConfiguration to configure."
         throw "Module not configured. Run Update-GithubPRBuilderConfiguration"
     }
     $secureString = $configuration.JiraPassword | ConvertTo-SecureString
