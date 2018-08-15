@@ -4,7 +4,7 @@ Write-Output ''
 # Make sure we're using the Master branch and that it's not a pull request
 # Environmental Variables Guide: https://www.appveyor.com/docs/environment-variables/
 if ($env:APPVEYOR_REPO_BRANCH -ne 'master' -and 
-    $env:APPVEYOR_REPO_BRANCH -notcontains 'version') {
+    $env:APPVEYOR_REPO_BRANCH -notmatch 'version') {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
 elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0) {
