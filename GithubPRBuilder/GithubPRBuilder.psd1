@@ -12,7 +12,7 @@
     RootModule        = '.\New-GithubPullrequest.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '1.0.0.34'
+    ModuleVersion     = '1.0.34'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -131,7 +131,7 @@
             # ReleaseNotes = ''
 
             # Prerelease string of this module
-            # Prerelease = ''
+            Prerelease = 'alpha'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update
             # RequireLicenseAcceptance = $false

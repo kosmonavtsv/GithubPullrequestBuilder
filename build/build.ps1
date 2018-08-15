@@ -3,7 +3,8 @@ Write-Output ''
 
 # Make sure we're using the Master branch and that it's not a pull request
 # Environmental Variables Guide: https://www.appveyor.com/docs/environment-variables/
-if ($env:APPVEYOR_REPO_BRANCH -ne 'master') {
+if ($env:APPVEYOR_REPO_BRANCH -ne 'master' -and 
+    $env:APPVEYOR_REPO_BRANCH -notcontains 'version') {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
 elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0) {
@@ -50,11 +51,11 @@ else {
         # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
         $env:Path += ";$env:ProgramFiles\Git\cmd"
         Import-Module posh-git -ErrorAction Stop
-        git checkout master
+        git checkout $env:APPVEYOR_REPO_BRANCH
         git add --all
         git status
         git commit -s -m "Update version to $newVersion"
-        git push origin master
+        git push origin $env:APPVEYOR_REPO_BRANCH
         Write-Host "GithubPRBuilder PowerShell Module version $newVersion published to GitHub." -ForegroundColor Cyan
     }
     Catch {
