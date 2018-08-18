@@ -4,5 +4,5 @@ param (
     [string]$ManifestPath
 )
 $manifest = Get-Content $ManifestPath -Raw | ConvertFrom-Metadata
-[System.Version]$version = $manifest.$ManifestPath
+[System.Version]$version = $manifest.ModuleVersion
 $version
