@@ -9,7 +9,7 @@ param (
     [Parameter(Mandatory)]
     [string]$ModuleVersion
 )
-$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
 
 Try {
     # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
