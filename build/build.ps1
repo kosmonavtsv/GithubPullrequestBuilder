@@ -3,7 +3,7 @@ Write-Output ''
 
 # Make sure we're using the Master branch and that it's not a pull request
 # Environmental Variables Guide: https://www.appveyor.com/docs/environment-variables/
-if ($env:APPVEYOR_REPO_BRANCH -ne 'master' -and 
+if ($env:APPVEYOR_REPO_BRANCH -ne 'master' -and
     $env:APPVEYOR_REPO_BRANCH -notmatch 'version') {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
@@ -11,56 +11,11 @@ elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0) {
     Write-Warning -Message "Skipping version increment and publish for pull request #$env:APPVEYOR_PULL_REQUEST_NUMBER"
 }
 else {
-    # We're going to add 1 to the revision value since a new commit has been merged to Master
-    # This means that the major / minor / build values will be consistent across GitHub and the Gallery
-    Try {
-        # This is where the module manifest lives
-        $manifestPath = '.\GithubPRBuilder\GithubPRBuilder.psd1'
+    $env:Path += ";$env:ProgramFiles\Git\cmd"
+    $manifestPath = '.\GithubPRBuilder\GithubPRBuilder.psd1'
 
-        # Start by importing the manifest to determine the version, then add 1 to the revision
-        $manifest = Test-ModuleManifest -Path $manifestPath
-        [System.Version]$version = $manifest.Version
-        Write-Output "Old Version: $version"
-        [String]$newVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $env:APPVEYOR_BUILD_NUMBER)
-        Write-Output "New Version: $newVersion"
-
-        Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion
-    }
-    catch {
-        throw $_
-    }
-    # Publish the new version to the PowerShell Gallery
-    Try {
-        # Build a splat containing the required details and make sure to Stop for errors which will trigger the catch
-        $PM = @{
-            Path        = '.\GithubPRBuilder'
-            NuGetApiKey = $env:NuGetApiKey
-            ErrorAction = 'Stop'
-        }
-        Publish-Module @PM
-        Write-Host "GithubPRBuilder PowerShell Module version $newVersion published to the PowerShell Gallery." -ForegroundColor Cyan
-    }
-    Catch {
-        # Sad panda; it broke
-        Write-Warning "Publishing update $newVersion to the PowerShell Gallery failed."
-        throw $_
-    }
-    # Publish the new version back to Master on GitHub
-    Try {
-        # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
-        # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
-        $env:Path += ";$env:ProgramFiles\Git\cmd"
-        Import-Module posh-git -ErrorAction Stop
-        git checkout $env:APPVEYOR_REPO_BRANCH
-        git add --all
-        git status
-        git commit -s -m "Update version to $newVersion"
-        git push origin $env:APPVEYOR_REPO_BRANCH
-        Write-Host "GithubPRBuilder PowerShell Module version $newVersion published to GitHub." -ForegroundColor Cyan
-    }
-    Catch {
-        # Sad panda; it broke
-        Write-Warning "Publishing update $newVersion to GitHub failed."
-        throw $_
-    }
+    .\build\Update-Manifest.ps1 -ManifestPath $manifestPath -BuildNumber  $env:APPVEYOR_BUILD_NUMBER
+    .\build\Publish-ToPowerShellGallery.ps1 -NuGetApiKey $env:NuGetApiKey
+    $moduleVersion = .\build\Get-ModuleVersion.ps1 -ManifestPath $manifestPath
+    .\build\Publish-ToGit.ps1 -Branch $env:APPVEYOR_REPO_BRANCH -ModuleVersion $moduleVersion
 }
