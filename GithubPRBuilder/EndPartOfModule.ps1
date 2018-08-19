@@ -1,3 +1,21 @@
+Register-ArgumentCompleter -CommandName New-GithubPullrequest -ParameterName FoodName -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+
+    $branches = git branch --no-color `
+        | ? {$_ -notmatch "^\* \(HEAD detached .+\)$"}`
+        | ? {$_ -match "^\*?\s*(?<ref>.*)"}`
+        | % {$matches['ref'] }
+    $branches += git branch --no-color -r `
+        | ? {$_ -match "^  (?<ref>\S+)(?: -> .+)?"}`
+        | % { $matches['ref'] }
+
+    $branches `
+        | ? { $_ -ne '(no branch)'}`
+        | ? { $_ -like "$wordToComplete*" } `
+        | % { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)}
+}
+
+
 # Test for it **during** module import:
 try {
     $null = Import-GithubPRBuilderConfiguration
