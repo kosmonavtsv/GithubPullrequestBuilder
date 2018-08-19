@@ -1,4 +1,4 @@
-[string[]]$PowerShellModules = @('posh-git', 'Configuration')
+[string[]]$PowerShellModules = @('Configuration')
 [string[]]$PackageProviders = @('NuGet', 'PowerShellGet')
 
 # Line break for readability in AppVeyor console

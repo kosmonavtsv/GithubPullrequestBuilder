@@ -10,32 +10,17 @@ param (
     [Parameter(Mandatory)]
     [int]$BuildNumber
 )
-PROCESS {
-    $manifest = Get-Content $ManifestPath -Raw | ConvertFrom-Metadata
-    [System.Version]$version = $manifest.ModuleVersion
-    Write-Output "Old Version: $version"
+$ErrorActionPreference = "Stop"
 
-    [String]$newVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $BuildNumber)
-    Write-Output "New Version: $newVersion"
+$manifestRaw = Get-Content $ManifestPath -Raw
+$manifest = $manifestRaw | ConvertFrom-Metadata
+[System.Version]$version = $manifest.ModuleVersion
+Write-Output "Old Version: $version"
 
-    $manifest.ModuleVersion = $newVersion
-    $manifest.NestedModules = Get-NestedModulesList
+[String]$newVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $BuildNumber)
+Write-Output "New Version: $newVersion"
 
-    $manifest | ConvertTo-Metadata | Set-Content -Path $ManifestPath -Encoding UTF8
-    Test-ModuleManifest $ManifestPath | Out-Null
-}
+$manifest.ModuleVersion = $newVersion
 
-BEGIN {
-    $ErrorActionPreference = "Stop"
-    function Get-NestedModulesList() {
-        [CmdletBinding()]
-        [OutputType([string[]])]
-
-        $nestedModuleFolders = @('main', 'configuration', 'git', 'jira', 'github')
-        $mofuleFolder = Resolve-Path $ManifestPath | Split-Path -Parent
-        [string[]]$nestedModules = $nestedModuleFolders `
-            | % {Get-ChildItem ".\GithubPRBuilder\$_\*.psm1"}`
-            | % {$_ -replace [regex]::escape($mofuleFolder), '.'}
-        $nestedModules
-    }
-}
+$manifest | ConvertTo-Metadata | Set-Content -Path $ManifestPath -Encoding UTF8
+Test-ModuleManifest $ManifestPath | Out-Null

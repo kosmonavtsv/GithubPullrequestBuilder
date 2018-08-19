@@ -1,3 +1,11 @@
+$ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
+
+$ModuleRoot = Join-Path -Path $ProjectRoot -ChildPath "GithubPRBuilder"
+$ManifestFile = Join-Path -Path $ModuleRoot -ChildPath "GithubPRBuilder.psd1"
+
+$ArtifactRoot = Join-Path -Path $ProjectRoot -ChildPath "dist"
+$ArtifactModuleRoot = Join-Path -Path $ArtifactRoot -ChildPath "GithubPRBuilder"
+
 # Line break for readability in AppVeyor console
 Write-Output ''
 
@@ -11,11 +19,12 @@ elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0) {
     Write-Warning -Message "Skipping version increment and publish for pull request #$env:APPVEYOR_PULL_REQUEST_NUMBER"
 }
 else {
-    $env:Path += ";$env:ProgramFiles\Git\cmd"
-    $manifestPath = '.\GithubPRBuilder\GithubPRBuilder.psd1'
+    Push-Location
+    Set-Location $ProjectRoot
 
-    .\build\Update-Manifest.ps1 -ManifestPath $manifestPath -BuildNumber  $env:APPVEYOR_BUILD_NUMBER
-    .\build\Publish-ToPowerShellGallery.ps1 -NuGetApiKey $env:NuGetApiKey
-    $moduleVersion = .\build\Get-ModuleVersion.ps1 -ManifestPath $manifestPath
-    .\build\Publish-ToGit.ps1 -Branch $env:APPVEYOR_REPO_BRANCH -ModuleVersion $moduleVersion
+    .\build\Update-Manifest.ps1 -ManifestPath $ManifestFile -BuildNumber  $env:APPVEYOR_BUILD_NUMBER
+    .\build\Publish-ModuleArtifacts -ModuleRoot $ModuleRoot -ArtifactRoot $ArtifactRoot
+    .\build\Publish-ToPowerShellGallery.ps1 -ModuleRoot $ArtifactModuleRoot -NuGetApiKey $env:NuGetApiKey
+
+    Pop-Location
 }

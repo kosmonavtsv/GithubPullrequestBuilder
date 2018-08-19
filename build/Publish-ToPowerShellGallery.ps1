@@ -2,17 +2,19 @@
 .SYNOPSIS
     Publish to the PowerShell Gallery
 #>
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess)]
 param (
     # This is where the module manifest lives
     [Parameter(Mandatory)]
-    [string]$NuGetApiKey
+    [string]$NuGetApiKey,
+    [Parameter(Mandatory)]
+    [string]$ModuleRoot
 )
 
 Try {
     # Build a splat containing the required details and make sure to Stop for errors which will trigger the catch
     $PM = @{
-        Path        = '.\GithubPRBuilder'
+        Path        = $ModuleRoot
         NuGetApiKey = $NuGetApiKey
         ErrorAction = 'Stop'
     }
