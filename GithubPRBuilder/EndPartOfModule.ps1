@@ -1,4 +1,4 @@
-Register-ArgumentCompleter -CommandName New-GithubPullrequest -ParameterName FoodName -ScriptBlock {
+Register-ArgumentCompleter -CommandName New-GithubPullrequest -ParameterName Base -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
 
     $branches = git branch --no-color `
