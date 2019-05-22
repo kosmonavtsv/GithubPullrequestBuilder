@@ -4,7 +4,7 @@ function Get-ModulePRTemplate {
 
     $config = Import-GithubPRBuilderConfiguration
     if ($config.$PRTemplatePath) {
-        Get-Content $confog.$PRTemplatePath -Raw
+        Get-Content $config.$PRTemplatePath -Raw
     }
     else {
         $PRTemplate
